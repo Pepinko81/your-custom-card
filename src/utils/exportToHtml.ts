@@ -119,7 +119,7 @@ export const exportToHtml = async (cardData: CardData): Promise<string> => {
             ` : `
             <div class="youtube-container">
                 <iframe
-                    src="https://www.youtube.com/embed/${cardData.music.url}?autoplay=1&loop=1"
+                    src="https://www.youtube.com/embed/${cardData.music.url}?autoplay=1&loop=1&playlist=${cardData.music.url}"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen
                 ></iframe>

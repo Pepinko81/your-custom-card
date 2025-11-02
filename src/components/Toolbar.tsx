@@ -1,4 +1,4 @@
-import { Upload, Sticker, Music, Eye, Download } from "lucide-react";
+import { Upload, Sticker, Music, Eye, Download, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ToolbarProps {
@@ -7,6 +7,7 @@ interface ToolbarProps {
   onAddMusic: () => void;
   onPreview: () => void;
   onExport: () => void;
+  onExportViber: () => void;
 }
 
 export const Toolbar = ({
@@ -15,6 +16,7 @@ export const Toolbar = ({
   onAddMusic,
   onPreview,
   onExport,
+  onExportViber,
 }: ToolbarProps) => {
   return (
     <div className="flex flex-col gap-3 p-6 bg-card rounded-2xl shadow-card border border-border">
@@ -63,6 +65,15 @@ export const Toolbar = ({
       >
         <Download className="w-5 h-5" />
         Експортирай HTML
+      </Button>
+
+      <Button
+        onClick={onExportViber}
+        variant="outline"
+        className="w-full justify-start gap-3 h-12 hover:bg-accent/10 hover:border-accent transition-all"
+      >
+        <Send className="w-5 h-5" />
+        Изпрати в Viber
       </Button>
     </div>
   );

@@ -10,12 +10,15 @@ interface PreviewModalProps {
 
 export const PreviewModal = ({ open, onClose, cardData }: PreviewModalProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
-    if (open && audioRef.current && cardData.music.url) {
-      audioRef.current.play().catch(err => {
-        console.log("Auto-play prevented:", err);
-      });
+    if (open && cardData.music.url) {
+      if (cardData.music.type === 'file' && audioRef.current) {
+        audioRef.current.play().catch(err => {
+          console.log("Auto-play prevented:", err);
+        });
+      }
     }
     
     return () => {
@@ -24,7 +27,7 @@ export const PreviewModal = ({ open, onClose, cardData }: PreviewModalProps) => 
         audioRef.current.currentTime = 0;
       }
     };
-  }, [open, cardData.music.url]);
+  }, [open, cardData.music.url, cardData.music.type]);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -33,7 +36,7 @@ export const PreviewModal = ({ open, onClose, cardData }: PreviewModalProps) => 
           <DialogTitle className="text-2xl font-bold">Преглед на картичката</DialogTitle>
         </DialogHeader>
         
-        <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-hover border border-border bg-background">
+        <div className="relative w-full rounded-xl overflow-hidden shadow-hover border border-border bg-background" style={{ width: '800px', height: '600px' }}>
           {cardData.backgroundImage ? (
             <img
               src={cardData.backgroundImage}
@@ -64,24 +67,21 @@ export const PreviewModal = ({ open, onClose, cardData }: PreviewModalProps) => 
           ))}
         </div>
 
-        {cardData.music.url && (
-          <div className="mt-4">
-            {cardData.music.type === 'file' ? (
-              <audio ref={audioRef} controls className="w-full">
-                <source src={cardData.music.url} type="audio/mpeg" />
-              </audio>
-            ) : (
-              <div className="aspect-video w-full rounded-lg overflow-hidden">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src={`https://www.youtube.com/embed/${cardData.music.url}?autoplay=1`}
-                  title="YouTube video player"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            )}
+        {/* Hidden audio/video for background music */}
+        {cardData.music.url && cardData.music.type === 'file' && (
+          <audio ref={audioRef} controls className="w-full mt-4">
+            <source src={cardData.music.url} type="audio/mpeg" />
+          </audio>
+        )}
+        
+        {cardData.music.url && cardData.music.type === 'youtube' && (
+          <div className="hidden">
+            <iframe
+              ref={iframeRef}
+              src={`https://www.youtube.com/embed/${cardData.music.url}?autoplay=1&enablejsapi=1`}
+              title="YouTube audio player"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            />
           </div>
         )}
       </DialogContent>

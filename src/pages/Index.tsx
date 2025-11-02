@@ -4,6 +4,7 @@ import { CardCanvas } from "@/components/CardCanvas";
 import { StickerSelector } from "@/components/StickerSelector";
 import { MusicUploader } from "@/components/MusicUploader";
 import { PreviewModal } from "@/components/PreviewModal";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { CardData, CardElement } from "@/types/card";
 import { exportToHtml, downloadHtml } from "@/utils/exportToHtml";
 import { toast } from "sonner";
@@ -97,22 +98,56 @@ const Index = () => {
     }
   };
 
+  const handleExportViber = async () => {
+    if (!cardData.backgroundImage && cardData.elements.length === 0) {
+      toast.error("Добавете фон или фигурки преди експорт");
+      return;
+    }
+
+    try {
+      const html = await exportToHtml(cardData);
+      const blob = new Blob([html], { type: 'text/html' });
+      const file = new File([blob], 'моята-картичка.html', { type: 'text/html' });
+
+      if (navigator.share && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: 'Моята Картичка',
+          text: 'Създадена с Cardify',
+          files: [file],
+        });
+        toast.success("Картичката е споделена!");
+      } else {
+        // Fallback: download the file
+        downloadHtml(html);
+        toast.info("Изтеглете файла и го изпратете чрез Viber");
+      }
+    } catch (error) {
+      toast.error("Грешка при споделяне");
+      console.error(error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       {/* Header */}
       <header className="bg-card/80 backdrop-blur-sm border-b border-border shadow-sm">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center text-primary-foreground font-bold text-xl shadow-card">
-              C
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center text-primary-foreground font-bold text-xl shadow-card">
+                C
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                  Cardify
+                </h1>
+                <p className="text-muted-foreground text-sm">
+                  Създай красиви интерактивни картички с музика
+                </p>
+              </div>
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Cardify
-            </h1>
+            <ThemeToggle />
           </div>
-          <p className="text-muted-foreground mt-1 ml-13">
-            Създай красиви интерактивни картички с музика
-          </p>
         </div>
       </header>
 
@@ -127,6 +162,7 @@ const Index = () => {
               onAddMusic={() => setShowMusicUploader(true)}
               onPreview={handlePreview}
               onExport={handleExport}
+              onExportViber={handleExportViber}
             />
           </div>
 

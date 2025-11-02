@@ -5,6 +5,14 @@ import happySticker from "@/assets/stickers/happy.png";
 import cakeSticker from "@/assets/stickers/cake.png";
 import balloonSticker from "@/assets/stickers/balloon.png";
 import confettiSticker from "@/assets/stickers/confetti.png";
+import candySticker from "@/assets/stickers/candy.png";
+import giftSticker from "@/assets/stickers/gift.png";
+import partyHatSticker from "@/assets/stickers/party-hat.png";
+import cupcakeSticker from "@/assets/stickers/cupcake.png";
+import sparklesSticker from "@/assets/stickers/sparkles.png";
+import sunSticker from "@/assets/stickers/sun.png";
+import rainbowSticker from "@/assets/stickers/rainbow.png";
+import musicNoteSticker from "@/assets/stickers/music-note.png";
 
 interface StickerSelectorProps {
   open: boolean;
@@ -19,6 +27,14 @@ const stickers = [
   { id: 'cake', src: cakeSticker, name: 'Торта' },
   { id: 'balloon', src: balloonSticker, name: 'Балони' },
   { id: 'confetti', src: confettiSticker, name: 'Конфети' },
+  { id: 'candy', src: candySticker, name: 'Бонбон' },
+  { id: 'gift', src: giftSticker, name: 'Подарък' },
+  { id: 'party-hat', src: partyHatSticker, name: 'Парти шапка' },
+  { id: 'cupcake', src: cupcakeSticker, name: 'Кексче' },
+  { id: 'sparkles', src: sparklesSticker, name: 'Искри' },
+  { id: 'sun', src: sunSticker, name: 'Слънце' },
+  { id: 'rainbow', src: rainbowSticker, name: 'Дъга' },
+  { id: 'music-note', src: musicNoteSticker, name: 'Нота' },
 ];
 
 export const StickerSelector = ({ open, onClose, onSelectSticker }: StickerSelectorProps) => {
@@ -33,7 +49,7 @@ export const StickerSelector = ({ open, onClose, onSelectSticker }: StickerSelec
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">Избери фигурка</DialogTitle>
         </DialogHeader>
-        <div className="grid grid-cols-3 gap-4 p-4">
+        <div className="grid grid-cols-4 gap-4 p-4 max-h-[60vh] overflow-y-auto">
           {stickers.map((sticker) => (
             <button
               key={sticker.id}

@@ -34,20 +34,44 @@ export const CardCanvas = ({ backgroundImage, elements, onElementsChange }: Card
     };
   }, []);
 
-  // Update background
+  // Update background (now as selectable object)
   useEffect(() => {
-    if (!fabricCanvas || !backgroundImage) return;
+    if (!fabricCanvas) return;
+
+    // Remove previous background object
+    const objects = fabricCanvas.getObjects();
+    objects.forEach(obj => {
+      const imgObj = obj as FabricObjectWithData;
+      if (imgObj.elementId === 'background') {
+        fabricCanvas.remove(obj);
+      }
+    });
+
+    if (!backgroundImage) return;
 
     FabricImage.fromURL(backgroundImage, {
       crossOrigin: 'anonymous',
     }).then((img) => {
-      img.scaleToWidth(800);
-      img.scaleToHeight(600);
-      img.set({
-        selectable: false,
-        evented: false,
+      const imgWithData = img as FabricObjectWithData;
+      
+      // Calculate scale to fit canvas
+      const scaleX = 800 / (img.width || 800);
+      const scaleY = 600 / (img.height || 600);
+      
+      imgWithData.set({
+        left: 0,
+        top: 0,
+        scaleX: scaleX,
+        scaleY: scaleY,
+        selectable: true,
+        hasControls: true,
+        hasBorders: true,
       });
-      fabricCanvas.backgroundImage = img;
+      imgWithData.elementId = 'background';
+      imgWithData.imageUrl = backgroundImage;
+      
+      fabricCanvas.add(imgWithData);
+      fabricCanvas.moveObjectTo(imgWithData, 0); // Move to back (index 0)
       fabricCanvas.renderAll();
     });
   }, [fabricCanvas, backgroundImage]);
@@ -61,7 +85,7 @@ export const CardCanvas = ({ backgroundImage, elements, onElementsChange }: Card
       const updatedElements: CardElement[] = objects
         .filter((obj) => {
           const imgObj = obj as FabricObjectWithData;
-          return imgObj.elementId;
+          return imgObj.elementId && imgObj.elementId !== 'background';
         })
         .map((obj) => {
           const imgObj = obj as FabricObjectWithData;
@@ -90,11 +114,11 @@ export const CardCanvas = ({ backgroundImage, elements, onElementsChange }: Card
   useEffect(() => {
     if (!fabricCanvas) return;
 
-    // Clear existing objects (except background)
+    // Clear existing sticker objects (not background)
     const objects = fabricCanvas.getObjects();
     objects.forEach(obj => {
       const imgObj = obj as FabricObjectWithData;
-      if (imgObj.elementId) {
+      if (imgObj.elementId && imgObj.elementId !== 'background') {
         fabricCanvas.remove(obj);
       }
     });
